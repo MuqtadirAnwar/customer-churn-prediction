@@ -1,7 +1,7 @@
 -- Identify customers at high risk of churn (low engagement and no recent purchases)
-SELECT CustomerID, Age, Location, DaysSinceLastPurchase, LoginFrequency
+SELECT CustomerID, Age, DaysSinceLastPurchase, LoginFrequency
 FROM customers
-WHERE LoginFrequency = 'Monthly'
+WHERE LoginFrequencyNumeric = -1.0946893248606926  -- Assuming 'Monthly' corresponds to this value
   AND DaysSinceLastPurchase > 60
 ORDER BY DaysSinceLastPurchase DESC;
 
@@ -25,15 +25,13 @@ FROM customers
 ORDER BY TotalPurchases DESC, LoyaltyScore DESC
 LIMIT 10;
 
-
--- Calculate churn rate by location
-SELECT Location,
+-- Calculate churn rate by location (modified for one-hot encoded locations)
+-- Example for 'Location_New York' - repeat for other locations as needed
+SELECT
        COUNT(*) AS TotalCustomers,
-       SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS ChurnedCustomers,
-       CAST(SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) AS ChurnRate
-FROM customers
-GROUP BY Location
-ORDER BY ChurnRate DESC;
+       SUM(CASE WHEN Churn = 'Yes' AND Location_New York = True THEN 1 ELSE 0 END) AS ChurnedCustomers,
+       CAST(SUM(CASE WHEN Churn = 'Yes' AND Location_New York = True THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) AS ChurnRate
+FROM customers;
 
 -- Analyze the relationship between support interactions and churn
 SELECT
