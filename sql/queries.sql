@@ -18,3 +18,9 @@ SELECT
 FROM customers
 GROUP BY AgeGroup
 ORDER BY AvgOrderValue DESC;
+
+-- Identify top customers by total purchases and loyalty score
+SELECT CustomerID, TotalPurchases, LoyaltyScore
+FROM customers
+ORDER BY TotalPurchases DESC, LoyaltyScore DESC
+LIMIT 10;
