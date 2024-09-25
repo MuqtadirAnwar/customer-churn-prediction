@@ -24,3 +24,28 @@ SELECT CustomerID, TotalPurchases, LoyaltyScore
 FROM customers
 ORDER BY TotalPurchases DESC, LoyaltyScore DESC
 LIMIT 10;
+
+
+-- Calculate churn rate by location
+SELECT Location,
+       COUNT(*) AS TotalCustomers,
+       SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS ChurnedCustomers,
+       CAST(SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) AS ChurnRate
+FROM customers
+GROUP BY Location
+ORDER BY ChurnRate DESC;
+
+-- Analyze the relationship between support interactions and churn
+SELECT
+  CASE
+    WHEN SupportInteractions = 0 THEN 'No Interactions'
+    WHEN SupportInteractions BETWEEN 1 AND 2 THEN '1-2 Interactions'
+    WHEN SupportInteractions BETWEEN 3 AND 5 THEN '3-5 Interactions'
+    ELSE '6+ Interactions'
+  END AS InteractionGroup,
+  COUNT(*) AS TotalCustomers,
+  SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS ChurnedCustomers,
+  CAST(SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) AS ChurnRate
+FROM customers
+GROUP BY InteractionGroup
+ORDER BY ChurnRate DESC;
